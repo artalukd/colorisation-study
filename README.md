@@ -8,10 +8,7 @@
 - Python version is > 3.6
 - python app.py  
 - open http://127.0.0.1:5000/
-
-
-
-# Pretrained model is available in the repo.
+- Pretrained model is available in the repo.
 
 # Model Architecture
 We build a Resnet34 based U-Net architecture in pytorch. We use Upsample+Convolution layer in the upscaling blocks because Transpose convolution layers present themselves with checkerboard artifacts. The Retnet34 backbone is not truncated as done in prior work and we show that going deeper did in fact help reduce loss at a higher rate. Skip connections we implemented were by using concatenation function. There are works which use element wise summation as well. Compute cost is less in element wise summation, but flexibility for representation learning is more in concatenation as the network gets to optimise over a larger representation space.
