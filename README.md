@@ -1,6 +1,6 @@
 # colorisation-study
 
-
+# Training code for UNET and encoder-decoder model available in respective IPYNBs.
 
 # Deploying Colorization on Flask server
 
