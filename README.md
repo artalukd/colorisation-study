@@ -6,7 +6,7 @@
 
 - Ensure all dependencies in requirements.txt are met.
 - Python version is > 3.6
-- python app.py  
+- run 'python app.py'
 - open http://127.0.0.1:5000/
 - Pretrained model is available in the repo.
 
