@@ -1,5 +1,5 @@
 
-
+#import statements
 import io
 import json
 from io import StringIO
@@ -31,12 +31,14 @@ import urllib.request
 import os
 from werkzeug.utils import secure_filename
  
+
+#flask initialization begins
 app = Flask(__name__)
 
 
 
 
-
+#class for NN model
 class ColorizationNet(nn.Module):
   def __init__(self, input_size=128):
     super(ColorizationNet, self).__init__()
@@ -104,11 +106,16 @@ class ColorizationNet(nn.Module):
 
     # Upsample to get colors
     return output
+
+#initialization code blocks
 model = ColorizationNet()
+#load model
 pretrained = torch.load('model_skip_best(1).pth', map_location=lambda storage, loc: storage)
 model.load_state_dict(pretrained)
 model.eval()
 
+
+#transformations for images
 val_transforms = transforms.Compose([transforms.Resize((512,512))])
 transforms_target = transforms.Compose([transforms.ToTensor(), transforms.Resize((512,512))])
 
@@ -120,9 +127,11 @@ def preprocess(image):
     img_ab = img_lab[:, :, 1:3]
     img_ab = torch.from_numpy(img_ab.transpose((2, 0, 1))).float()
     img_original = rgb2gray(img_original)
-    img_original = torch.from_numpy(img_original).unsqueeze(0).float()
+    img_original = torch.from_numpytransformations(img_original).unsqueeze(0).float()
     return img_original,img_ab, (transforms_target(image))
 
+
+#convert RGB 3 channel to LAB images 
 def to_rgb(grayscale_input, ab_input, target,filename):
 
   color_image = torch.cat((grayscale_input, ab_input), 0).numpy() # combine channels
@@ -135,7 +144,7 @@ def to_rgb(grayscale_input, ab_input, target,filename):
   plt.imsave(arr=color_image, fname='static/uploads/color_'+filename)
   return (color_image, grayscale_input)
 
-
+# predicts color image given grayscale image and filepath to save it
 def get_prediction(image_bytes,filename):
     bw,ab,org = preprocess(Image.open(BytesIO(image_bytes)))
     dataset = TensorDataset(bw.unsqueeze(0), ab.unsqueeze(0), org.unsqueeze(0))
@@ -145,24 +154,27 @@ def get_prediction(image_bytes,filename):
         output_ab = model(input_gray) 
         return to_rgb(input_gray[0], output_ab[0].detach(), target[0].detach(),filename)
 
+# Return Jpg image
 def serve_pil_image(pil_img):
     img_io = StringIO()
     pil_img.save(img_io, 'JPEG', quality=70)
     img_io.seek(0)
     return send_file(img_io, mimetype='image/jpeg')
  
+# defaults uploads folder
 UPLOAD_FOLDER = 'static/uploads/'
  
-app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
  
+#checking for allowed file types
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
  
+# checking for correct file type
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
      
- 
+#flask file routing 
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -198,6 +210,7 @@ def predict():
         img_bytes = file.read()
         get_prediction(image_bytes=img_bytes)
         return send_file("color.jpg", mimetype='image/jpeg')
- 
+
+#launch flask server
 if __name__ == "__main__":
     app.run()
