@@ -5,7 +5,7 @@
 # Deploying Colorization on Flask server
 
 - Ensure all dependencies in requirements.txt are met.
-- - Pretrained model is available in the repo base directory, the model given in this repo is UNet (based on Resnet 34) trained on landscapes dataset.
+- Pretrained model is available in the repo base directory, the model given in this repo is UNet (based on Resnet 34) trained on landscapes dataset.
 - Python version is > 3.6
 - run ```python app.py```
 - open http://127.0.0.1:5000/
